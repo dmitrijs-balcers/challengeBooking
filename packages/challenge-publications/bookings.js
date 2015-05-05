@@ -4,19 +4,17 @@ Meteor.publish('totalWorth', function () {
 
     console.log('calculate totalWorth');
 
-    var db, bookingsHandle, totalWorth, observerQuery, pipeline,
+    var bookingsHandle, totalWorth, observerQuery, pipeline,
         now = new Date(),
         timer = new Timer(),
         subscription = this;
-
-    db = MongoInternals.defaultRemoteCollectionDriver().mongo.db;
 
     pipeline = [
         {$match: {date: {$gte: _subtractMonths(now, 1)}, status: WON}},
         {$group: {_id: '$status', totalWorth: {$sum: "$price"}}}
     ];
 
-    db.collection('bookings').aggregate(
+    Bookings.rawCollection().aggregate(
         pipeline,
         Meteor.bindEnvironment(
             function (err, result) {

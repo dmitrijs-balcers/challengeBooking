@@ -6,7 +6,10 @@ Package.describe({
 
 Package.onUse(function (api) {
 
-    api.use(['challenge:core', 'challenge:models']);
+    api.use([
+        'challenge:core',
+        'challenge:models'
+    ]);
 
     api.addFiles(['bookings.js', 'utils/timer.js'], 'server');
 });
