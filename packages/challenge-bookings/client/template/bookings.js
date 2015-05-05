@@ -6,7 +6,7 @@ Template.bookings.onCreated(function () {
 
 Template.bookings.helpers({
     foo: function () {
-        return TotalWorth.find();
+        return TotalWorth.findOne({_id: 'won'});
     }
 });
 

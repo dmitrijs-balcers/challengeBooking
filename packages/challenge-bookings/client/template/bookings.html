@@ -9,10 +9,8 @@
 </body>
 
 <template name="bookings">
-    {{#each foo}}
-        {{this.totalWorth}}
-        <br/>
-    {{/each}}
+    <b>{{foo.totalWorth}}</b>
+    <br/>
 
     {{> addWonBooking}}
 </template>
