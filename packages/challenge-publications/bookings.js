@@ -35,7 +35,9 @@ Meteor.publish('totalWorth', function () {
         // changed & removed does not give values to calculate deltas...
     });
 
-    subscription.onStop(bookingsHandle.stop);
+    subscription.onStop(function () {
+        bookingsHandle.stop()
+    });
     subscription.ready();
 
     console.log('totalWorth finished in ' + timer.delta());
