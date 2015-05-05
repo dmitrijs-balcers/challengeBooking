@@ -1,0 +1,23 @@
+<head>
+    <title>simple-todos</title>
+</head>
+
+<body>
+<h1>Welcome to Meteor!</h1>
+
+{{> bookings}}
+</body>
+
+<template name="bookings">
+    {{#each foo}}
+        {{this.totalWorth}}
+        <br/>
+    {{/each}}
+
+    {{> addWonBooking}}
+</template>
+
+<template name="addWonBooking">
+    Price: <input id="price" type="text" name="price"><br>
+    <input id="addBooking" type="submit" value="submit">
+</template>
