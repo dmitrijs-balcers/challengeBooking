@@ -13,7 +13,7 @@ Meteor.publish('totalWorth', function () {
         _pipeline(now),
         Meteor.bindEnvironment(
             function (err, result) {
-                console.log('result', result);
+
                 _.each(result, function (r) {
                     totalWorth = r.totalWorth;
                     subscription.added('totalWorth', r._id, {totalWorth: r.totalWorth});
@@ -22,9 +22,11 @@ Meteor.publish('totalWorth', function () {
         ));
 
     bookingsHandle = Bookings.find({
+
         date: {$gte: now},
         status: "won"
     }).observeChanges({
+
         added: function (id, fields) {
             subscription.changed('totalWorth', 'won', {totalWorth: totalWorth += fields.price})
         }
@@ -43,12 +45,14 @@ function _pipeline(now) {
     return [
         {
             $match: {
+
                 date: {$gte: _subtractMonths(now, 1)},
                 status: "won"
             }
         },
         {
             $group: {
+
                 _id: '$status',
                 totalWorth: {$sum: "$price"}
             }
@@ -66,12 +70,14 @@ function _subtractMonths(date, months) {
 
 Meteor.methods({
     addWonBooking: function addWonBooking(price) {
+
         var timer = new Timer();
         check(price, Number);
 
         console.log('addWonBooking');
 
         Bookings.insert({
+
             price: price,
             date: Date.now(),
             status: 'won'
