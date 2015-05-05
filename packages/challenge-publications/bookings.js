@@ -1,3 +1,5 @@
+var WON = 'won';
+
 Meteor.publish('totalWorth', function () {
 
     console.log('calculate totalWorth');
@@ -10,7 +12,7 @@ Meteor.publish('totalWorth', function () {
     db = MongoInternals.defaultRemoteCollectionDriver().mongo.db;
 
     pipeline = [
-        {$match: {date: {$gte: _subtractMonths(now, 1)}, status: "won"}},
+        {$match: {date: {$gte: _subtractMonths(now, 1)}, status: WON}},
         {$group: {_id: '$status', totalWorth: {$sum: "$price"}}}
     ];
 
@@ -25,12 +27,12 @@ Meteor.publish('totalWorth', function () {
             }
         ));
 
-    observerQuery = {date: {$gte: now}, status: "won"};
+    observerQuery = {date: {$gte: now}, status: WON};
 
     bookingsHandle = Bookings.find(observerQuery).observeChanges({
 
         added: function (id, fields) {
-            subscription.changed('totalWorth', 'won', {totalWorth: totalWorth += fields.price})
+            subscription.changed('totalWorth', WON, {totalWorth: totalWorth += fields.price})
         }
         // changed & removed does not give values to calculate deltas...
     });
@@ -63,7 +65,7 @@ Meteor.methods({
 
             price: price,
             date: Date.now(),
-            status: 'won'
+            status: WON
         });
 
         console.log('addWonBooking finished in' + timer.delta());
