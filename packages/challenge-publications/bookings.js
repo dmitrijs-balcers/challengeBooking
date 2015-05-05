@@ -20,10 +20,8 @@ Meteor.publish('totalWorth', function () {
         pipeline,
         Meteor.bindEnvironment(
             function (err, result) {
-
-                var r = result[0];
-                totalWorth = r.totalWorth;
-                subscription.added('totalWorth', r._id, {totalWorth: totalWorth});
+                totalWorth = result[0] ? result[0].totalWorth : 0;
+                subscription.added('totalWorth', WON, {totalWorth: totalWorth});
             }
         ));
 
@@ -37,9 +35,7 @@ Meteor.publish('totalWorth', function () {
         // changed & removed does not give values to calculate deltas...
     });
 
-    subscription.onStop(function () {
-        bookingsHandle.stop();
-    });
+    subscription.onStop(bookingsHandle.stop);
     subscription.ready();
 
     console.log('totalWorth finished in ' + timer.delta());
