@@ -2,30 +2,32 @@ Meteor.publish('totalWorth', function () {
 
     console.log('calculate totalWorth');
 
-    var db, bookingsHandle, totalWorth,
+    var db, bookingsHandle, totalWorth, observerQuery, pipeline,
         now = new Date(),
         timer = new Timer(),
         subscription = this;
 
-    db = MongoInternals.defaultRemoteCollectionDriver().mongo.db; // Meteor does not support aggregation
+    db = MongoInternals.defaultRemoteCollectionDriver().mongo.db;
+
+    pipeline = [
+        {$match: {date: {$gte: _subtractMonths(now, 1)}, status: "won"}},
+        {$group: {_id: '$status', totalWorth: {$sum: "$price"}}}
+    ];
 
     db.collection('bookings').aggregate(
-        _pipeline(now),
+        pipeline,
         Meteor.bindEnvironment(
             function (err, result) {
 
-                _.each(result, function (r) {
-                    totalWorth = r.totalWorth;
-                    subscription.added('totalWorth', r._id, {totalWorth: r.totalWorth});
-                });
+                var r = result[0];
+                totalWorth = r.totalWorth;
+                subscription.added('totalWorth', r._id, {totalWorth: totalWorth});
             }
         ));
 
-    bookingsHandle = Bookings.find({
+    observerQuery = {date: {$gte: now}, status: "won"};
 
-        date: {$gte: now},
-        status: "won"
-    }).observeChanges({
+    bookingsHandle = Bookings.find(observerQuery).observeChanges({
 
         added: function (id, fields) {
             subscription.changed('totalWorth', 'won', {totalWorth: totalWorth += fields.price})
@@ -40,25 +42,6 @@ Meteor.publish('totalWorth', function () {
 
     console.log('totalWorth finished in ' + timer.delta());
 });
-
-function _pipeline(now) {
-    return [
-        {
-            $match: {
-
-                date: {$gte: _subtractMonths(now, 1)},
-                status: "won"
-            }
-        },
-        {
-            $group: {
-
-                _id: '$status',
-                totalWorth: {$sum: "$price"}
-            }
-        }
-    ];
-}
 
 function _subtractMonths(date, months) {
 
