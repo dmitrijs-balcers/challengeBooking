@@ -16,12 +16,11 @@ Meteor.publish('totalWorth', function () {
 
     Bookings.rawCollection().aggregate(
         pipeline,
-        Meteor.bindEnvironment(
-            function (err, result) {
-                totalWorth = result[0] ? result[0].totalWorth : 0;
-                subscription.added('totalWorth', WON, {totalWorth: totalWorth});
-            }
-        ));
+        function (err, result) {
+            totalWorth = result[0] ? result[0].totalWorth : 0;
+            subscription.added('totalWorth', WON, {totalWorth: totalWorth});
+        }
+    );
 
     observerQuery = {date: {$gte: now}, status: WON};
 
